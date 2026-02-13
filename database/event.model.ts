@@ -148,7 +148,7 @@ EventSchema.pre('save', function (next) {
     const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
     if (!timeRegex.test(this.time)) {
       // Attempt to parse time
-      const timeParts = this.time.match(/(\d{1,2}):(\d{2})/);
+      const timeParts = this.time.match(/^(\d{1,2}):(\d{2})$/);
       if (!timeParts) {
         return next(new Error('Invalid time format. Expected HH:MM (24-hour format)'));
       }
