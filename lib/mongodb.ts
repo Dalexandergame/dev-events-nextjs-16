@@ -21,10 +21,10 @@ const MONGODB_URI = process.env.MONGODB_URI;
  * Global cache to store the mongoose connection
  * Prevents multiple connections in development due to hot reloading
  */
-let cached = global.mongoose;
+let cached = global.mongooseCache;
 
 if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
+  cached = global.mongooseCache = { conn: null, promise: null };
 }
 
 /**
