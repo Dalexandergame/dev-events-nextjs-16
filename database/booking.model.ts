@@ -48,7 +48,7 @@ const BookingSchema = new Schema<IBooking>(
  * Ensures the referenced event exists before creating a booking
  * Prevents orphaned bookings for non-existent events
  */
-BookingSchema.pre('save', async function (next) {
+BookingSchema.pre('save', async function () {
   // Only validate eventId if it's modified or the document is new
   if (this.isModified('eventId')) {
     try {
@@ -59,14 +59,12 @@ BookingSchema.pre('save', async function (next) {
       const eventExists = await Event.exists({ _id: this.eventId });
       
       if (!eventExists) {
-        return next(new Error(`Event with ID ${this.eventId} does not exist`));
+        return new Error(`Event with ID ${this.eventId} does not exist`);
       }
     } catch (error) {
-      return next(error instanceof Error ? error : new Error('Error validating event'));
+      return error instanceof Error ? error : new Error('Error validating event');
     }
   }
-  
-  next();
 });
 
 // Create index on eventId for efficient event-based queries
