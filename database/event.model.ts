@@ -137,7 +137,7 @@ EventSchema.pre('save', async function () {
       // Attempt to parse and convert to ISO format
       const parsedDate = new Date(this.date);
       if (isNaN(parsedDate.getTime())) {
-        return new Error('Invalid date format. Expected ISO format (YYYY-MM-DD)');
+        throw new Error('Invalid date format. Expected ISO format (YYYY-MM-DD)');
       }
       this.date = parsedDate.toISOString().split('T')[0];
     }
@@ -150,12 +150,12 @@ EventSchema.pre('save', async function () {
       // Attempt to parse time
       const timeParts = this.time.match(/^(\d{1,2}):(\d{2})$/);
       if (!timeParts) {
-        return new Error('Invalid time format. Expected HH:MM (24-hour format)');
+        throw new Error('Invalid time format. Expected HH:MM (24-hour format)');
       }
       const hours = parseInt(timeParts[1], 10);
       const minutes = parseInt(timeParts[2], 10);
       if (hours > 23 || minutes > 59) {
-        return new Error('Invalid time. Hours must be 0-23 and minutes 0-59');
+        throw new Error('Invalid time. Hours must be 0-23 and minutes 0-59');
       }
       this.time = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
     }

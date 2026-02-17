@@ -50,8 +50,8 @@ const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }>}
       throw new Error(`Failed to fetch event: ${response.statusText}`);
     }
 
-    const request = await response.json();
-    event = request.event;
+    const data = await response.json();
+    event = data.event;
 
     if(!event) return notFound();
   } catch (error) {
@@ -60,7 +60,7 @@ const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }>}
     return notFound();
   }
 
-  const { description, image, overview, date, time, location, mode, agenda, audience, tags, organiser } = event;
+  const { description, image, overview, date, time, location, mode, agenda, audience, tags, organizer } = event;
 
   const bookings = 10;
 
@@ -96,7 +96,7 @@ const EventDetailsPage = async ({ params }: { params: Promise<{ slug: string }>}
 
           <section className="flex-col-gap-2">
             <h2>About the Organiser</h2>
-            <p>{organiser}</p>
+            <p>{organizer}</p>
           </section>
 
           <EventTags tags={tags} />
