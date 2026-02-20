@@ -8,25 +8,34 @@ import { useState } from "react"
 const BookEvent = ({ eventId, slug }: { eventId: string; slug: string; }) => {
     const [email, setEmail] = useState("");
     const [submitted, setSubmitted] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        
-        const { success } = await createBooking({ eventId, slug, email });
+        if (isSubmitting) return;
 
-        if(success) {
-            setSubmitted(true);
-            posthog.capture('event booked', {
-                eventId,
-                slug,
-                email
-            });
-        } else {
-            // Handle booking failure (e.g., show an error message)
-            console.error('Failed to create booking');
-            posthog.captureException('Booking creation failed');
+        setIsSubmitting(true);
+
+        try {
+            const { success } = await createBooking({ eventId, slug, email });
+
+            if(success) {
+                setSubmitted(true);
+                posthog.capture('event booked', {
+                    eventId,
+                    slug,
+                    email
+                });
+            } else {
+                console.error('Failed to create booking');
+                posthog.captureException('Booking creation failed');
+            }
+        } catch (error) {
+            console.error('Failed to create booking', error);
+            posthog.captureException(error);
+        } finally {
+            setIsSubmitting(false);
         }
-        
     }
 
   return (
@@ -46,7 +55,9 @@ const BookEvent = ({ eventId, slug }: { eventId: string; slug: string; }) => {
                         required />
                 </div>
 
-                <button type="submit" className="button-submit">Book Now</button>
+                <button type="submit" className="button-submit" disabled={isSubmitting || submitted}>
+                    {isSubmitting ? "Booking..." : "Book Now"}
+                </button>
             </form>
         )}
     </div>
